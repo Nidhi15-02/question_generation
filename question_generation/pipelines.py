@@ -40,11 +40,9 @@ class QGPipeline:
         self.num_beams = num_beams
 
 
-#         self.device = "cuda" if torch.cuda.is_available() and use_cuda else "cpu"
-#         self.model.to(self.device)
-
-#         if self.ans_model is not self.model:
-#             self.ans_model.to(self.device)
+        self.device = "cuda" if torch.cuda.is_available() and use_cuda else "cpu"
+        self.model.to(self.device)
+        self.ans_model.to(self.device)
 
 #         assert self.model._class.name_ in ["T5ForConditionalGeneration", "BartForConditionalGeneration"]
         
@@ -77,8 +75,8 @@ class QGPipeline:
         inputs = self._tokenize(inputs, padding=True, truncation=True)
         
         outs = self.model.generate(
-            input_ids=inputs['input_ids'], 
-            attention_mask=inputs['attention_mask'], 
+            input_ids=inputs['input_ids'].to(self.device), 
+            attention_mask=inputs['attention_mask'].to(self.device), 
             max_length= self.ques_max_length,
             num_beams = self.num_beams,
         )
@@ -91,8 +89,8 @@ class QGPipeline:
         inputs = self._tokenize(inputs, padding=True, truncation=True)
 
         outs = self.ans_model.generate(
-            input_ids=inputs['input_ids'], 
-            attention_mask=inputs['attention_mask'], 
+            input_ids=inputs['input_ids'].to(self.device), 
+            attention_mask=inputs['attention_mask'].to(self.device), 
             max_length= self.ans_max_length,
         )
         
